@@ -1,9 +1,23 @@
-numpy==1.23.5
-filterpy==1.4.5
-opencv-python==4.7.0.72
+# Core dependencies for TalkNet (used by both local and Modal)
+torch>=2.0.0
+torchaudio>=2.0.0
+torchvision>=0.15.0
+numpy
+scipy
+scikit-learn
+tqdm
 scenedetect[opencv]
+opencv-python
+python_speech_features
+gdown
+imageio[ffmpeg]
+
+# Legacy dependencies (may be needed for some components)
+filterpy==1.4.5
 lap==0.4.0
 sortedcontainers
 supervision
 vidgear[core]
-imageio[ffmpeg]
+
+# Modal (required for unified processing)
+modal>=0.60.0

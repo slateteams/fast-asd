@@ -16,7 +16,7 @@ from talkNet import talkNet
 
 warnings.filterwarnings("ignore")
 
-pretrained_model_path = "/root/.cache/models/pretrain_TalkSet.model"
+pretrained_model_path = os.path.join(os.path.dirname(__file__), "models", "pretrain_TalkSet.model")
 save_path = "save/"
 data_loader_thread = 10
 face_detection_scale = 0.25
@@ -34,6 +34,10 @@ videoFilePath = os.path.join(pyaviPath, 'video.avi')
 audioFilePath = os.path.join(pyaviPath, 'audio.wav')
 
 if os.path.isfile(pretrained_model_path) == False: # Download the pretrained model
+    # Create models directory if it doesn't exist
+    models_dir = os.path.dirname(pretrained_model_path)
+    os.makedirs(models_dir, exist_ok=True)
+    
     Link = "1AbN9fCf9IexMxEKXLQY2KYBlb-IhSEea"
     cmd = "gdown --id %s -O %s"%(Link, pretrained_model_path)
     subprocess.call(cmd, shell=True, stdout=None)
@@ -65,8 +69,9 @@ def scene_detect(video_path, save = False, start_frame = 0, end_frame = None):
 			# sys.stderr.write('%s - scenes detected %d\n'%(video_path, len(sceneList)))
 	return sceneList
 
-def initialize_detector(device='cuda'):
-	# Initialize the face detector
+def initialize_detector(device='cpu'):
+	# Initialize the face detector on CPU (S3FD has MPS compatibility issues)
+	# The main TalkNet model will still use MPS/CUDA for the heavy computation
 	DET = S3FD(device=device)
 	return DET
 
@@ -268,9 +273,10 @@ def evaluate_network(s, files):
 			batchSize = int(math.ceil(length / duration))
 			scores = []
 			with torch.no_grad():
+				device = next(s.parameters()).device  # Get device from model
 				for i in range(batchSize):
-					inputA = torch.FloatTensor(audioFeature[i * duration * 100:(i+1) * duration * 100,:]).unsqueeze(0).cuda()
-					inputV = torch.FloatTensor(videoFeature[i * duration * 25: (i+1) * duration * 25,:,:]).unsqueeze(0).cuda()
+					inputA = torch.FloatTensor(audioFeature[i * duration * 100:(i+1) * duration * 100,:]).unsqueeze(0).to(device)
+					inputV = torch.FloatTensor(videoFeature[i * duration * 25: (i+1) * duration * 25,:,:]).unsqueeze(0).to(device)
 					embedA = s.model.forward_audio_frontend(inputA)
 					embedV = s.model.forward_visual_frontend(inputV)	
 					embedA, embedV = s.model.forward_cross_attention(embedA, embedV)
