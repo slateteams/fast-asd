@@ -118,7 +118,7 @@ def process_video_url(video_url: str, start_time: float = 0, end_time: float = N
             end_seconds=end_time,
             return_visualization=False,
             face_boxes="",
-            in_memory_threshold=0
+            in_memory_threshold=3000
         )
         
         return format_results_as_json(results, video_url, start_time, end_time)
