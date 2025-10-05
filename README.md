@@ -1,58 +1,43 @@
 # TalkNet Active Speaker Detection
 
-Optimized implementation of active speaker detection using [TalkNet](https://github.com/TaoRuijie/TalkNet-ASD).
+Cloud-based active speaker detection using [TalkNet](https://github.com/TaoRuijie/TalkNet-ASD), deployed on [Modal](https://modal.com).
 
-This implementation supports:
+Features:
 
-- **Local processing** with M3 Mac GPU acceleration
-- **Modal cloud** deployment for scalable processing
+- **Modal cloud processing** with GPU acceleration (L4, A10, or L40S)
 - **JSON output** with bounding boxes and speaking detection
-- **Variable frame-rate** videos (not just 25 FPS)
+- **URL support** - process videos from URLs or local files
+- **Flexible time ranges** - process specific segments
 
 ## Quick Start
 
-### 1. Install dependencies
+### 1. Setup
 
 ```bash
-pip install -r requirements.txt
-```
-
-### 2. Run locally (free, uses your GPU)
-
-```bash
-python main.py video.mp4 --local --output results.json
-```
-
-### 3. Run on Modal cloud (production)
-
-```bash
+pip install modal
 modal token new
-python main.py video.mp4 --output results.json
 ```
 
-## Usage Options
-
-**Local Processing:**
+### 2. Process a video
 
 ```bash
-# Basic usage (uses your M3 GPU)
-python main.py video.mp4 --local --output results.json
-
-# With time range
-python main.py video.mp4 --local --start 10 --end 30 --output results.json
+modal run main.py::process_video_url --video-url video.mp4
 ```
 
-**Modal Cloud Processing:**
+## Usage
 
 ```bash
 # Basic usage
-python main.py video.mp4 --output results.json
+modal run main.py::process_video_url --video-url video.mp4
 
-# With time range
-python main.py video.mp4 --start 10 --end 30 --output results.json
+# Process specific time range
+modal run main.py::process_video_url --video-url video.mp4 --start-time 10 --end-time 30
 
-# Alternative: Modal CLI
-modal run main.py::process_video --video-path video.mp4 --start-time 0 --end-time 30
+# Process from URL
+modal run main.py::process_video_url --video-url https://example.com/video.mp4
+
+# Deploy as a persistent endpoint
+modal deploy main.py
 ```
 
 ## Output Format

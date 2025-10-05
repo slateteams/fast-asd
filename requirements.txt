@@ -1,24 +1,25 @@
-# Core dependencies for TalkNet (used by both local and Modal)
+# PyTorch ecosystem (core ML framework)
 torch>=2.0.0
 torchaudio>=2.0.0
 torchvision>=0.15.0
+
+# Scientific computing
 numpy
 scipy
-scikit-learn
 pandas
-tqdm
-scenedetect[opencv]
+scikit-learn
+
+# Computer vision and media processing
 opencv-python
-python_speech_features
-gdown
 imageio[ffmpeg]
+scenedetect[opencv]
 
-# Legacy dependencies (may be needed for some components)
-filterpy==1.4.5
-lap==0.4.0
-sortedcontainers
-supervision
-vidgear[core]
+# Audio processing
+python_speech_features
 
-# Modal (required for unified processing)
+# Utilities
+tqdm
+gdown
+
+# Cloud deployment
 modal>=0.60.0
