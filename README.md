@@ -1,28 +1,92 @@
-# fast-asd
+# TalkNet Active Speaker Detection
 
-This repository is an optimized, production-ready implementation of active speaker detection. Read more about the research area [here](https://paperswithcode.com/task/audio-visual-active-speaker-detection).
+Optimized implementation of active speaker detection using [TalkNet](https://github.com/TaoRuijie/TalkNet-ASD).
 
-It contains of two parts:
-- The open-source implementation of the [active speaker detection](https://www.sievedata.com/functions/sieve/active_speaker_detection) application that runs on the [Sieve](https://www.sievedata.com/) platform.
-- The standalone, optimized implementation of [TalkNet](https://github.com/TaoRuijie/TalkNet-ASD), a leading model for active speaker detection.
+This implementation supports:
 
-The TalkNet implementation significantly improve on the original primarily from the perspective of performance. The pre-processing and post-processing steps are faster and it support variable frame-rate videos (not just 25 FPS like the original). The active speaker detection implementation is a further productionized version of this that parallelizes processing through TalkNet and a separate standalone face detection model to provide faster, higher-quality speaker tracking and detection results.
+- **Local processing** with M3 Mac GPU acceleration
+- **Modal cloud** deployment for scalable processing
+- **JSON output** with bounding boxes and speaking detection
+- **Variable frame-rate** videos (not just 25 FPS)
 
-## Usage
+## Quick Start
 
-### TalkNet
-If you plan to just use the standalone implementation of TalkNet, follow the steps below:
+### 1. Install dependencies
 
-1. go to the `talknet` directory
-2. run `pip install -r requirements.txt`
-3. run `python main.py`
+```bash
+pip install -r requirements.txt
+```
 
-You can change the input video file being used by modifying the `main` function in `main.py`.
+### 2. Run locally (free, uses your GPU)
 
-### Active Speaker Detection
+```bash
+python main.py video.mp4 --local --output results.json
+```
 
-The easiest way to run active speaker detection is to use the version already deployed on the Sieve platform available [here](https://www.sievedata.com/functions/sieve/active_speaker_detection).
+### 3. Run on Modal cloud (production)
 
-While the core application can be run locally, it still calls public functions available on Sieve, such at the YOLO object detection model so you will need to sign up for a free account and get an API key. You can do so [here](https://www.sievedata.com/).
+```bash
+modal token new
+python main.py video.mp4 --output results.json
+```
 
-After you've signed up and run `sieve login`, you can run `main.py` from the root directory of this repository to run the active speaker detection application.
+## Usage Options
+
+**Local Processing:**
+
+```bash
+# Basic usage (uses your M3 GPU)
+python main.py video.mp4 --local --output results.json
+
+# With time range
+python main.py video.mp4 --local --start 10 --end 30 --output results.json
+```
+
+**Modal Cloud Processing:**
+
+```bash
+# Basic usage
+python main.py video.mp4 --output results.json
+
+# With time range
+python main.py video.mp4 --start 10 --end 30 --output results.json
+
+# Alternative: Modal CLI
+modal run main.py::process_video --video-path video.mp4 --start-time 0 --end-time 30
+```
+
+## Output Format
+
+Returns JSON with frame-by-frame face detection and speaking analysis:
+
+```json
+{
+  "video_info": {
+    "path": "video.mp4",
+    "total_frames": 750
+  },
+  "frames": [
+    {
+      "frame_number": 0,
+      "timestamp": 0.0,
+      "faces": [
+        {
+          "track_id": 0,
+          "bounding_box": {
+            "x1": 100,
+            "y1": 200,
+            "x2": 300,
+            "y2": 400,
+            "width": 200,
+            "height": 200
+          },
+          "speaking": {
+            "is_speaking": true,
+            "confidence_score": 0.85
+          }
+        }
+      ]
+    }
+  ]
+}
+```

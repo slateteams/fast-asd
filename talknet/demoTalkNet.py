@@ -11,12 +11,12 @@ from scenedetect.frame_timecode import FrameTimecode
 from scenedetect.stats_manager import StatsManager
 from scenedetect.detectors import ContentDetector
 
-from model.faceDetector.s3fd import S3FD
-from talkNet import talkNet
+from .model.faceDetector.s3fd import S3FD
+from .talkNet import talkNet
 
 warnings.filterwarnings("ignore")
 
-pretrained_model_path = "/root/.cache/models/pretrain_TalkSet.model"
+pretrained_model_path = os.path.join(os.path.dirname(__file__), "models", "pretrain_TalkSet.model")
 save_path = "save/"
 data_loader_thread = 10
 face_detection_scale = 0.25
