@@ -23,3 +23,6 @@ gdown
 
 # Cloud deployment
 modal>=0.60.0
+
+# HTTP client for callbacks
+requests

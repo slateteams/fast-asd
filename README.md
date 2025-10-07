@@ -8,6 +8,8 @@ Features:
 - **JSON output** with bounding boxes and speaking detection
 - **URL support** - process videos from URLs or local files
 - **Flexible time ranges** - process specific segments
+- **Async processing** with callback support for AWS Lambda integration
+- **Job tracking** - submit jobs and get results via callback URL
 
 ## Quick Start
 
