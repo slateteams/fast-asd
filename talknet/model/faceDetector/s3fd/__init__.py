@@ -6,7 +6,9 @@ from torchvision import transforms
 from .nets import S3FDNet
 from .box_utils import nms_
 
-PATH_WEIGHT = 'model/faceDetector/s3fd/sfd_face.pth'
+# Use absolute path for the weight file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+PATH_WEIGHT = os.path.join(current_dir, 'sfd_face.pth')
 if os.path.isfile(PATH_WEIGHT) == False:
     cmd = "wget -O %s https://storage.googleapis.com/mango-public-models/sfd_face.pth"%(PATH_WEIGHT)
     subprocess.call(cmd, shell=True, stdout=None)
@@ -22,7 +24,9 @@ class S3FD():
 
         # print('[S3FD] loading with', self.device)
         self.net = S3FDNet(device=self.device).to(self.device)
-        PATH = os.path.join(os.getcwd(), PATH_WEIGHT)
+        # Use absolute path relative to this file's directory
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        PATH = os.path.join(current_dir, 'sfd_face.pth')
         state_dict = torch.load(PATH, map_location=self.device)
         self.net.load_state_dict(state_dict)
         self.net.eval()

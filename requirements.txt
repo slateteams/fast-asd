@@ -1,9 +1,28 @@
-numpy==1.23.5
-filterpy==1.4.5
-opencv-python==4.7.0.72
-scenedetect[opencv]
-lap==0.4.0
-sortedcontainers
-supervision
-vidgear[core]
+# PyTorch ecosystem (core ML framework)
+torch>=2.0.0
+torchaudio>=2.0.0
+torchvision>=0.15.0
+
+# Scientific computing
+numpy
+scipy
+pandas
+scikit-learn
+
+# Computer vision and media processing
+opencv-python
 imageio[ffmpeg]
+scenedetect[opencv]
+
+# Audio processing
+python_speech_features
+
+# Utilities
+tqdm
+gdown
+
+# Cloud deployment
+modal>=0.60.0
+
+# HTTP client for callbacks
+requests

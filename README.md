@@ -1,28 +1,79 @@
-# fast-asd
+# TalkNet Active Speaker Detection
 
-This repository is an optimized, production-ready implementation of active speaker detection. Read more about the research area [here](https://paperswithcode.com/task/audio-visual-active-speaker-detection).
+Cloud-based active speaker detection using [TalkNet](https://github.com/TaoRuijie/TalkNet-ASD), deployed on [Modal](https://modal.com).
 
-It contains of two parts:
-- The open-source implementation of the [active speaker detection](https://www.sievedata.com/functions/sieve/active_speaker_detection) application that runs on the [Sieve](https://www.sievedata.com/) platform.
-- The standalone, optimized implementation of [TalkNet](https://github.com/TaoRuijie/TalkNet-ASD), a leading model for active speaker detection.
+Features:
 
-The TalkNet implementation significantly improve on the original primarily from the perspective of performance. The pre-processing and post-processing steps are faster and it support variable frame-rate videos (not just 25 FPS like the original). The active speaker detection implementation is a further productionized version of this that parallelizes processing through TalkNet and a separate standalone face detection model to provide faster, higher-quality speaker tracking and detection results.
+- **Modal cloud processing** with GPU acceleration (L4, A10, or L40S)
+- **JSON output** with bounding boxes and speaking detection
+- **URL support** - process videos from URLs or local files
+- **Flexible time ranges** - process specific segments
+- **Async processing** with callback support for AWS Lambda integration
+- **Job tracking** - submit jobs and get results via callback URL
+
+## Quick Start
+
+### 1. Setup
+
+```bash
+pip install modal
+modal token new
+```
+
+### 2. Process a video
+
+```bash
+modal run main.py::process_video_url --video-url video.mp4
+```
 
 ## Usage
 
-### TalkNet
-If you plan to just use the standalone implementation of TalkNet, follow the steps below:
+```bash
+# Basic usage
+modal run main.py::process_video_url --video-url video.mp4
 
-1. go to the `talknet` directory
-2. run `pip install -r requirements.txt`
-3. run `python main.py`
+# Process specific time range
+modal run main.py::process_video_url --video-url video.mp4 --start-time 10 --end-time 30
 
-You can change the input video file being used by modifying the `main` function in `main.py`.
+# Process from URL
+modal run main.py::process_video_url --video-url https://example.com/video.mp4
 
-### Active Speaker Detection
+# Deploy as a persistent endpoint
+modal deploy main.py
+```
 
-The easiest way to run active speaker detection is to use the version already deployed on the Sieve platform available [here](https://www.sievedata.com/functions/sieve/active_speaker_detection).
+## Output Format
 
-While the core application can be run locally, it still calls public functions available on Sieve, such at the YOLO object detection model so you will need to sign up for a free account and get an API key. You can do so [here](https://www.sievedata.com/).
+Returns JSON with frame-by-frame face detection and speaking analysis:
 
-After you've signed up and run `sieve login`, you can run `main.py` from the root directory of this repository to run the active speaker detection application.
+```json
+{
+  "video_info": {
+    "path": "video.mp4",
+    "total_frames": 750
+  },
+  "frames": [
+    {
+      "frame_number": 0,
+      "timestamp": 0.0,
+      "faces": [
+        {
+          "track_id": 0,
+          "bounding_box": {
+            "x1": 100,
+            "y1": 200,
+            "x2": 300,
+            "y2": 400,
+            "width": 200,
+            "height": 200
+          },
+          "speaking": {
+            "is_speaking": true,
+            "confidence_score": 0.85
+          }
+        }
+      ]
+    }
+  ]
+}
+```
