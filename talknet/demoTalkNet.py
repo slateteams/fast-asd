@@ -640,17 +640,22 @@ def main(
 	# sys.stderr.write(time.strftime("%Y-%m-%d %H:%M:%S") + " Scores extracted and saved in %s \r\n" %pyworkPath)
 
 	if (end_seconds - start_seconds) * fps < STORE_FRAMES_IN_MEMORY_THRESHOLD:
-		faces = [{'frame_number': i, 'faces': []} for i in range(len(frames))]
+		faces = [{'frame_number': i, 'faces': [], 'scene_id': -1} for i in range(len(frames))]
 	else:
 		flist = glob.glob(os.path.join(pyframesPath, '*.jpg'))
 		flist.sort()
-		faces = [{'frame_number': i, 'faces': []} for i in range(len(flist))]
+		faces = [{'frame_number': i, 'faces': [], 'scene_id': -1} for i in range(len(flist))]
 
 	def get_scene_by_frame_number(frame_number):
 		for scene_data in new_scenes:
 			if scene_data[0].frame_num <= frame_number and scene_data[1].frame_num > frame_number:
 				return scene_data
 		return None
+	
+	# Set scene_id for each frame
+	for frame in faces:
+		scene_data = get_scene_by_frame_number(frame['frame_number'] + int(25 * start_seconds))
+		frame['scene_id'] = scene_data[0].frame_num if scene_data is not None else -1
 	
 	# print('vidtracks', vidTracks)
 	faces_by_scene = {}
@@ -700,6 +705,7 @@ def main(
 				frame_num = int(i * (25 / fps)) - new_scenes[0][0].frame_num
 			interpolated_frames.append({
 				'frame_number': i,
+				'scene_id': scene_num,
 				'faces': [] if frame_num not in faces_by_frame else faces_by_frame[frame_num]
 			})
 		interpolated_faces.extend(interpolated_frames)

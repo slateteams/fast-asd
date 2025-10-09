@@ -11,7 +11,6 @@ from utils import get_video_path_or_download, format_results_as_json, send_callb
 # Modal app configuration
 app = modal.App("talknet-asd")
 
-
 @app.function(
     image=image,
     volumes={"/models": model_volume},
@@ -44,22 +43,19 @@ def process_video_url(
     """
     from talknet.demoTalkNet import setup, main as talknet_main
     
-    # Get job ID from Modal's environment
     job_id = os.environ.get("MODAL_TASK_ID", "unknown")
     
-    # Add talknet to path
     sys.path.insert(0, '/root')
     
-    # Download video if URL, or validate local path
     temp_video_path, needs_cleanup = get_video_path_or_download(video_url)
     
     try:
         print(f"Processing video: {video_url} (Job ID: {job_id})")
+        print(f"Metadata received: {job_metadata}")
         
         # Setup TalkNet model
         s, DET = setup()
         
-        # Process video
         results = talknet_main(
             s=s,
             DET=DET,
@@ -71,14 +67,11 @@ def process_video_url(
             in_memory_threshold=3000
         )
         
-        # Format results
         formatted_results = format_results_as_json(results, video_url, start_time, end_time)
         
-        # Add metadata if provided
         if job_metadata:
             formatted_results["metadata"] = job_metadata
         
-        # Send success callback
         if callback_url:
             send_callback(callback_url, job_id, "completed", result=formatted_results)
         

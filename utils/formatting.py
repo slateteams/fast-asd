@@ -28,6 +28,7 @@ def format_results_as_json(results: list, video_path: str, start_time: float, en
         frame_info = {
             "frame_number": frame_data["frame_number"],
             "timestamp": frame_data["frame_number"] / 25.0,  # Assuming 25 FPS
+            "scene_id": frame_data.get("scene_id", -1),
             "faces": []
         }
         
